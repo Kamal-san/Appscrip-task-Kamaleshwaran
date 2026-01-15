@@ -28,9 +28,9 @@ export default function Home({ products, categories }) {
         <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
         <meta property="og:description" content="Shop exclusive fashion catalog" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yourwebsite.com" />
+        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.netlify.app/" />
 
-        <link rel="canonical" href="https://yourwebsite.com/" />
+        <link rel="canonical" href="https://appscrip-task-kamaleshwaran.netlify.app/" />
 
         <script
           type="application/ld+json"
@@ -41,7 +41,7 @@ export default function Home({ products, categories }) {
               "name": "Product Listing – Appscrip Store",
               "description":
                 "Browse thousands of premium fashion products with customization options.",
-              "url": "https://fakestoreapi.com/products",
+              "url": "https://appscrip-task-kamaleshwaran.netlify.app/",
               "mainEntity": products?.map((p) => ({
                 "@type": "Product",
                 "name": p.title,
@@ -101,21 +101,20 @@ export default function Home({ products, categories }) {
 }
 
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
     const productsRes = await fetch("https://fakestoreapi.com/products");
-    const categoriesRes = await fetch(
-      "https://fakestoreapi.com/products/categories"
-    );
+    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
 
-    const products = (await productsRes.json()) || [];
-    const categories = (await categoriesRes.json()) || [];
+    const products = await productsRes.json();
+    const categories = await categoriesRes.json();
 
     return {
       props: {
         products,
         categories,
       },
+      revalidate: 60, // ISR -> rebuild every 60 seconds
     };
   } catch (error) {
     console.error("API ERROR:", error);
@@ -125,6 +124,7 @@ export async function getServerSideProps() {
         products: [],
         categories: [],
       },
+      revalidate: 60,
     };
   }
 }
