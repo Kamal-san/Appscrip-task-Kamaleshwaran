@@ -1,0 +1,12 @@
+.layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 32px;
+  width: 100%;
+  padding: 0 60px;
+  margin-top: 40px;
+}
+
+.layout.full {
+  grid-template-columns: 1fr;
+}

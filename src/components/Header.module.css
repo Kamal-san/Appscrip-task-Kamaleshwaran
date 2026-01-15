@@ -1,0 +1,62 @@
+
+.header {
+  width: 100%;
+  background: #fff;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.left {
+  flex: 1;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+}
+
+.center {
+  flex: 2;
+  text-align: center;
+}
+
+.center h1 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.nav a {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  align-items: center;
+}
+
+.right img {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.lang {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

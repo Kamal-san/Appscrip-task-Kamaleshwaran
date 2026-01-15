@@ -1,0 +1,36 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Simplon Norm", sans-serif;
+}
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+
+body {
+    background: #fff;
+    color: #222;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  transition: 0.3s ease;
+}
+
+.products.full {
+  grid-template-columns: repeat(4, 1fr); /* 4 products per row when filters hidden */
+}
+
