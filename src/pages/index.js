@@ -17,26 +17,13 @@ export default function Home({ products, categories }) {
     <>
       <Head>
         <title>Explore Premium Fashion Products – Appscrip Store</title>
-
         <meta
           name="description"
           content="Explore premium clothing, accessories, and handcrafted fashion items."
         />
-
         <link
           rel="canonical"
           href="https://appscrip-task-kamaleshwaran.vercel.app/"
-        />
-
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
-        <meta
-          property="og:description"
-          content="Discover premium curated fashion items."
-        />
-        <meta
-          property="og:url"
-          content="https://appscrip-task-kamaleshwaran.vercel.app/"
         />
       </Head>
 
@@ -77,11 +64,16 @@ export default function Home({ products, categories }) {
   );
 }
 
-export async function getServerSideProps() {
+/* ✅ SSR — INTERNAL API CALLS ONLY */
+export async function getServerSideProps({ req }) {
   try {
+    const protocol = req.headers["x-forwarded-proto"] || "http";
+    const host = req.headers.host;
+    const baseUrl = `${protocol}://${host}`;
+
     const [productsRes, categoriesRes] = await Promise.all([
-      fetch("https://fakestoreapi.com/products"),
-      fetch("https://fakestoreapi.com/products/categories"),
+      fetch(`${baseUrl}/api/products`),
+      fetch(`${baseUrl}/api/categories`),
     ]);
 
     const products = await productsRes.json();
@@ -94,8 +86,7 @@ export async function getServerSideProps() {
       },
     };
   } catch (error) {
-    console.error("SSR FETCH ERROR:", error);
-
+    console.error("SSR ERROR:", error);
     return {
       props: {
         products: [],
