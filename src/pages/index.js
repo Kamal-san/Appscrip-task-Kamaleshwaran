@@ -93,24 +93,22 @@ export default function Home({ products, categories }) {
 }
 
 export async function getStaticProps() {
-  async function safeFetch(url) {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) return null;
-      return await res.json();
-    } catch {
-      return null;
-    }
+  try {
+    const productRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`);
+    const categoryRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`);
+
+    const products = await productRes.json();
+    const categories = await categoryRes.json();
+
+    return {
+      props: { products, categories },
+      revalidate: 60,
+    };
+  } catch (err) {
+    console.error("ERROR IN getStaticProps:", err);
+    return {
+      props: { products: [], categories: [] },
+      revalidate: 60,
+    };
   }
-
-  const products = await safeFetch("https://fakestoreapi.com/products");
-  const categories = await safeFetch("https://fakestoreapi.com/products/categories");
-
-  return {
-    props: {
-      products: Array.isArray(products) ? products : [],
-      categories: Array.isArray(categories) ? categories : []
-    },
-    revalidate: 30, // ISR
-  };
 }
