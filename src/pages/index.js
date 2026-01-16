@@ -92,31 +92,42 @@ export default function Home({ products, categories }) {
   );
 }
 
-// ✅ FIXED getStaticProps
 export async function getStaticProps() {
   try {
-    // Direct Fakestore API calls (REQUIRED for Vercel)
-    const productRes = await fetch("https://fakestoreapi.com/products");
-    const categoryRes = await fetch("https://fakestoreapi.com/products/categories");
+    const productRes = await fetch("https://fakestoreapi.com/products?limit=20", {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      }
+    });
 
-    const products = await productRes.json();
-    const categories = await categoryRes.json();
+    const categoryRes = await fetch("https://fakestoreapi.com/products/categories", {
+      method: "GET",
+      headers: {
+        Accept: "application/json"
+      }
+    });
+
+    // Ensure JSON parsing doesn't break if HTML returned
+    const products = await productRes.json().catch(() => []);
+    const categories = await categoryRes.json().catch(() => []);
 
     return {
       props: {
         products: Array.isArray(products) ? products : [],
-        categories: Array.isArray(categories) ? categories : [],
+        categories: Array.isArray(categories) ? categories : []
       },
-      revalidate: 60,
+      revalidate: 30,
     };
+
   } catch (error) {
-    console.error("ERROR IN getStaticProps:", error);
+    console.error("STATIC BUILD FETCH ERROR:", error);
+
     return {
       props: {
         products: [],
-        categories: [],
-      },
-      revalidate: 60,
+        categories: []
+      }
     };
   }
 }
