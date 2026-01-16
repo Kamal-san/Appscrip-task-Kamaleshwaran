@@ -66,10 +66,8 @@ export default function Home({ products, categories }) {
 
 export async function getServerSideProps() {
   try {
-    const [productsRes, categoriesRes] = await Promise.all([
-      fetch("https://fakestoreapi.com/products"),
-      fetch("https://fakestoreapi.com/products/categories"),
-    ]);
+    const productsRes = await fetch("https://fakestoreapi.com/products");
+    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
 
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
