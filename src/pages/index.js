@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import Head from "next/head";
 
 import Header from "../components/Header";
@@ -11,7 +10,6 @@ import Footer from "../components/Footer";
 
 import styles from "../components/ProductGrid.module.css";
 
-
 export default function Home({ products, categories }) {
   const [showFilters, setShowFilters] = useState(true);
 
@@ -22,7 +20,7 @@ export default function Home({ products, categories }) {
 
         <meta
           name="description"
-          content="Explore premium clothing, accessories, and handcrafted fashion items. Shop curated high-quality products with customization options."
+          content="Explore premium clothing, accessories, and handcrafted fashion items."
         />
 
         <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
@@ -38,18 +36,17 @@ export default function Home({ products, categories }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "CollectionPage",
-              "name": "Product Listing – Appscrip Store",
-              "description":
-                "Browse thousands of premium fashion products with customization options.",
-              "url": "https://appscrip-task-kamaleshwaran.vercel.app/",
-              "mainEntity": products?.map((p) => ({
+              name: "Product Listing – Appscrip Store",
+              description: "Browse thousands of premium fashion products.",
+              url: "https://appscrip-task-kamaleshwaran.vercel.app/",
+              mainEntity: products?.map((p) => ({
                 "@type": "Product",
-                "name": p.title,
-                "image": p.image,
-                "offers": {
+                name: p.title,
+                image: p.image,
+                offers: {
                   "@type": "Offer",
-                  "price": p.price,
-                  "priceCurrency": "INR",
+                  price: p.price,
+                  priceCurrency: "INR",
                 },
               })),
             }),
@@ -61,27 +58,23 @@ export default function Home({ products, categories }) {
       <Discover />
 
       <ProductsNavBar
-        totalItems={3425}
+        totalItems={products?.length || 0}
         showFilters={showFilters}
         setShowFilters={setShowFilters}
       />
 
       <main className="main-container">
-        
         <div className={showFilters ? "layout" : "layout full"}>
-
-  
           {showFilters && <Filters categories={categories} />}
-
 
           <section
             className={
               showFilters
-                ? styles.products              
+                ? styles.products
                 : `${styles.products} ${styles.full}`
             }
           >
-            {(products || []).map((product) => (
+            {products?.map((product) => (
               <ProductCard
                 key={product.id}
                 image={product.image}
@@ -90,39 +83,35 @@ export default function Home({ products, categories }) {
               />
             ))}
           </section>
-
         </div>
-
       </main>
 
       <Footer />
     </>
   );
 }
+
 export async function getStaticProps() {
   try {
-    const productsRes = await fetch("https://fakestoreapi.com/products");
-    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
+    // Use the internal Vercel API proxy
+    const productRes = await fetch(
+      "https://appscrip-task-kamaleshwaran.vercel.app/api/products"
+    );
+    const categoryRes = await fetch(
+      "https://appscrip-task-kamaleshwaran.vercel.app/api/categories"
+    );
 
-    // Ensure valid JSON
-    const products = await productsRes.json();
-    const categories = await categoriesRes.json();
+    const products = await productRes.json();
+    const categories = await categoryRes.json();
 
     return {
-      props: {
-        products: products || [],
-        categories: categories || [],
-      },
-      revalidate: 60, // ISR: update automatically every 60 seconds
+      props: { products, categories },
+      revalidate: 60, // ISR refresh every 60 seconds
     };
-  } catch (error) {
-    console.error("BUILD ERROR:", error);
-
+  } catch (err) {
+    console.error("ERROR IN getStaticProps:", err);
     return {
-      props: {
-        products: [],
-        categories: [],
-      },
+      props: { products: [], categories: [] },
       revalidate: 60,
     };
   }
