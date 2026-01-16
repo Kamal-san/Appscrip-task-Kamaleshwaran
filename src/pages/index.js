@@ -69,12 +69,12 @@ export default function Home({ products, categories }) {
   );
 }
 
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps() {
   try {
-    const host = req.headers.host;
-    const protocol = host.includes("localhost") ? "http" : "https";
-
-    const baseURL = `${protocol}://${host}`;
+    const baseURL =
+      process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
 
     const productsRes = await fetch(`${baseURL}/api/products`);
     const categoriesRes = await fetch(`${baseURL}/api/categories`);
@@ -86,8 +86,7 @@ export async function getServerSideProps({ req }) {
       props: { products, categories },
     };
   } catch (err) {
-    console.error("SSR FETCH ERROR:", err);
-
+    console.error("SSR ERROR:", err);
     return {
       props: { products: [], categories: [] },
     };
