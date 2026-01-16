@@ -69,10 +69,15 @@ export default function Home({ products, categories }) {
   );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
   try {
-    const productsRes = await fetch("https://fakestoreapi.com/products");
-    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
+    const host = req.headers.host;
+    const protocol = host.includes("localhost") ? "http" : "https";
+
+    const baseURL = `${protocol}://${host}`;
+
+    const productsRes = await fetch(`${baseURL}/api/products`);
+    const categoriesRes = await fetch(`${baseURL}/api/categories`);
 
     const products = await productsRes.json();
     const categories = await categoriesRes.json();

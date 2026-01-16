@@ -8,8 +8,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
     return res.status(200).json(data);
-
-  } catch (error) {
-    return res.status(500).json({ error: "API Proxy Error", details: error.message });
+  } catch (err) {
+    return res.status(500).json({ error: "Server Error", details: err.message });
   }
 }
