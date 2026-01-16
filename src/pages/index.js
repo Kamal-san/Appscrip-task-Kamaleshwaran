@@ -64,16 +64,11 @@ export default function Home({ products, categories }) {
   );
 }
 
-/* ✅ SSR — INTERNAL API CALLS ONLY */
-export async function getServerSideProps({ req }) {
+export async function getServerSideProps() {
   try {
-    const protocol = req.headers["x-forwarded-proto"] || "http";
-    const host = req.headers.host;
-    const baseUrl = `${protocol}://${host}`;
-
     const [productsRes, categoriesRes] = await Promise.all([
-      fetch(`${baseUrl}/api/products`),
-      fetch(`${baseUrl}/api/categories`),
+      fetch("http://localhost:3000/api/products"),
+      fetch("http://localhost:3000/api/categories"),
     ]);
 
     const products = await productsRes.json();
