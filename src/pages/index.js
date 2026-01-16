@@ -28,9 +28,9 @@ export default function Home({ products, categories }) {
         <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
         <meta property="og:description" content="Shop exclusive fashion catalog" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.netlify.app/" />
+        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.vercel.app/" />
 
-        <link rel="canonical" href="https://appscrip-task-kamaleshwaran.netlify.app/" />
+        <link rel="canonical" href="https://appscrip-task-kamaleshwaran.vercel.app/" />
 
         <script
           type="application/ld+json"
@@ -41,7 +41,7 @@ export default function Home({ products, categories }) {
               "name": "Product Listing – Appscrip Store",
               "description":
                 "Browse thousands of premium fashion products with customization options.",
-              "url": "https://appscrip-task-kamaleshwaran.netlify.app/",
+              "url": "https://appscrip-task-kamaleshwaran.vercel.app/",
               "mainEntity": products?.map((p) => ({
                 "@type": "Product",
                 "name": p.title,
@@ -99,9 +99,7 @@ export default function Home({ products, categories }) {
     </>
   );
 }
-
-
-export async function getStaticProps() {
+export async function getServerSideProps() {
   try {
     const productsRes = await fetch("https://fakestoreapi.com/products");
     const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
@@ -110,21 +108,13 @@ export async function getStaticProps() {
     const categories = await categoriesRes.json();
 
     return {
-      props: {
-        products,
-        categories,
-      },
-      revalidate: 60, // ISR -> rebuild every 60 seconds
+      props: { products, categories },
     };
-  } catch (error) {
-    console.error("API ERROR:", error);
+  } catch (err) {
+    console.error("SERVER FETCH ERROR:", err);
 
     return {
-      props: {
-        products: [],
-        categories: [],
-      },
-      revalidate: 60,
+      props: { products: [], categories: [] },
     };
   }
 }
