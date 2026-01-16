@@ -70,33 +70,39 @@ export default function Home({ products, categories }) {
 }
 
 export async function getServerSideProps() {
+  let products = [];
+  let categories = [];
+
   try {
-    const [productsRes, categoriesRes] = await Promise.all([
-      fetch("https://fakestoreapi.com/products"),
-      fetch("https://fakestoreapi.com/products/categories"),
-    ]);
+    const productsRes = await fetch(
+      "https://fakestoreapi.com/products",
+      { timeout: 8000 }
+    );
 
-    if (!productsRes.ok || !categoriesRes.ok) {
-      throw new Error("External API failed");
+    if (productsRes.ok) {
+      products = await productsRes.json();
     }
-
-    const products = await productsRes.json();
-    const categories = await categoriesRes.json();
-
-    return {
-      props: {
-        products: Array.isArray(products) ? products : [],
-        categories: Array.isArray(categories) ? categories : [],
-      },
-    };
-  } catch (error) {
-    console.error("SSR ERROR:", error);
-
-    return {
-      props: {
-        products: [],
-        categories: [],
-      },
-    };
+  } catch (err) {
+    console.error("Products API failed:", err.message);
   }
+
+  try {
+    const categoriesRes = await fetch(
+      "https://fakestoreapi.com/products/categories",
+      { timeout: 8000 }
+    );
+
+    if (categoriesRes.ok) {
+      categories = await categoriesRes.json();
+    }
+  } catch (err) {
+    console.error("Categories API failed:", err.message);
+  }
+
+  return {
+    props: {
+      products: Array.isArray(products) ? products : [],
+      categories: Array.isArray(categories) ? categories : [],
+    },
+  };
 }
