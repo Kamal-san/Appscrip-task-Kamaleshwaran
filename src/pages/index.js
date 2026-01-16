@@ -99,21 +99,31 @@ export default function Home({ products, categories }) {
     </>
   );
 }
-export async function getServerSideProps() {
+export async function getStaticProps() {
   try {
-    const productsRes = await fetch("https://appscrip-task-kamaleshwaran.vercel.app/api/products");
-    const categoriesRes = await fetch("https://appscrip-task-kamaleshwaran.vercel.app/api/categories");
+    const productsRes = await fetch("https://fakestoreapi.com/products");
+    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
 
+    // Ensure valid JSON
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
 
     return {
-      props: { products, categories },
+      props: {
+        products: products || [],
+        categories: categories || [],
+      },
+      revalidate: 60, // ISR: update automatically every 60 seconds
     };
-  } catch (err) {
-    console.error("SERVER FETCH ERROR:", err);
+  } catch (error) {
+    console.error("BUILD ERROR:", error);
+
     return {
-      props: { products: [], categories: [] },
+      props: {
+        products: [],
+        categories: [],
+      },
+      revalidate: 60,
     };
   }
 }
