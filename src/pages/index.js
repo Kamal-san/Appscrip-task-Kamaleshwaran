@@ -93,41 +93,24 @@ export default function Home({ products, categories }) {
 }
 
 export async function getStaticProps() {
-  try {
-    const productRes = await fetch("https://fakestoreapi.com/products?limit=20", {
-      method: "GET",
-      headers: {
-        Accept: "application/json"
-      }
-    });
-
-    const categoryRes = await fetch("https://fakestoreapi.com/products/categories", {
-      method: "GET",
-      headers: {
-        Accept: "application/json"
-      }
-    });
-
-    // Ensure JSON parsing doesn't break if HTML returned
-    const products = await productRes.json().catch(() => []);
-    const categories = await categoryRes.json().catch(() => []);
-
-    return {
-      props: {
-        products: Array.isArray(products) ? products : [],
-        categories: Array.isArray(categories) ? categories : []
-      },
-      revalidate: 30,
-    };
-
-  } catch (error) {
-    console.error("STATIC BUILD FETCH ERROR:", error);
-
-    return {
-      props: {
-        products: [],
-        categories: []
-      }
-    };
+  async function safeFetch(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
   }
+
+  const products = await safeFetch("https://fakestoreapi.com/products");
+  const categories = await safeFetch("https://fakestoreapi.com/products/categories");
+
+  return {
+    props: {
+      products: Array.isArray(products) ? products : [],
+      categories: Array.isArray(categories) ? categories : []
+    },
+    revalidate: 30, // ISR
+  };
 }
