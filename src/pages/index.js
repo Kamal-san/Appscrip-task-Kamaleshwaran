@@ -23,14 +23,20 @@ export default function Home({ products, categories }) {
           content="Explore premium clothing, accessories, and handcrafted fashion items."
         />
 
-        <link rel="canonical" href="https://appscrip-task-kamaleshwaran.vercel.app/" />
+        <link
+          rel="canonical"
+          href="https://appscrip-task-kamaleshwaran.vercel.app/"
+        />
 
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
-        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.vercel.app/" />
         <meta
           property="og:description"
           content="Discover premium curated fashion items."
+        />
+        <meta
+          property="og:url"
+          content="https://appscrip-task-kamaleshwaran.vercel.app/"
         />
       </Head>
 
@@ -49,7 +55,9 @@ export default function Home({ products, categories }) {
 
           <section
             className={
-              showFilters ? styles.products : `${styles.products} ${styles.full}`
+              showFilters
+                ? styles.products
+                : `${styles.products} ${styles.full}`
             }
           >
             {products.map((product) => (
@@ -71,24 +79,28 @@ export default function Home({ products, categories }) {
 
 export async function getServerSideProps() {
   try {
-    const baseURL =
-      process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
-
-    const productsRes = await fetch(`${baseURL}/api/products`);
-    const categoriesRes = await fetch(`${baseURL}/api/categories`);
+    const [productsRes, categoriesRes] = await Promise.all([
+      fetch("https://fakestoreapi.com/products"),
+      fetch("https://fakestoreapi.com/products/categories"),
+    ]);
 
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
 
     return {
-      props: { products, categories },
+      props: {
+        products: Array.isArray(products) ? products : [],
+        categories: Array.isArray(categories) ? categories : [],
+      },
     };
-  } catch (err) {
-    console.error("SSR ERROR:", err);
+  } catch (error) {
+    console.error("SSR FETCH ERROR:", error);
+
     return {
-      props: { products: [], categories: [] },
+      props: {
+        products: [],
+        categories: [],
+      },
     };
   }
 }
