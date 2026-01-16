@@ -67,26 +67,20 @@ export default function Home({ products, categories }) {
 export async function getServerSideProps() {
   try {
     const [productsRes, categoriesRes] = await Promise.all([
-      fetch("http://localhost:3000/api/products"),
-      fetch("http://localhost:3000/api/categories"),
+      fetch("https://fakestoreapi.com/products"),
+      fetch("https://fakestoreapi.com/products/categories"),
     ]);
 
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
 
     return {
-      props: {
-        products: Array.isArray(products) ? products : [],
-        categories: Array.isArray(categories) ? categories : [],
-      },
+      props: { products, categories },
     };
   } catch (error) {
-    console.error("SSR ERROR:", error);
+    console.error("SSR FETCH ERROR:", error);
     return {
-      props: {
-        products: [],
-        categories: [],
-      },
+      props: { products: [], categories: [] },
     };
   }
 }
