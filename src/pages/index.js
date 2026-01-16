@@ -47,15 +47,20 @@ export default function Home({ products, categories }) {
                 : `${styles.products} ${styles.full}`
             }
           >
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
-                price={product.price}
-              />
-            ))}
+            {products.length === 0 ? (
+              <p>No products available</p>
+            ) : (
+              products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  image={product.image}
+                  title={product.title}
+                  price={product.price}
+                />
+              ))
+            )}
           </section>
+
         </div>
       </main>
 
@@ -71,11 +76,27 @@ export async function getServerSideProps() {
       fetch("https://fakestoreapi.com/products/categories"),
     ]);
 
+    if (!productsRes.ok || !categoriesRes.ok) {
+      throw new Error("External API failed");
+    }
+
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
 
-    return { props: { products, categories } };
+    return {
+      props: {
+        products: Array.isArray(products) ? products : [],
+        categories: Array.isArray(categories) ? categories : [],
+      },
+    };
   } catch (error) {
-    return { props: { products: [], categories: [] } };
+    console.error("SSR ERROR:", error);
+
+    return {
+      props: {
+        products: [],
+        categories: [],
+      },
+    };
   }
 }
