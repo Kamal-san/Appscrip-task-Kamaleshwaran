@@ -74,14 +74,15 @@ export default function Home({ products, categories }) {
                 : `${styles.products} ${styles.full}`
             }
           >
-            {products?.map((product) => (
-              <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
-                price={product.price}
-              />
-            ))}
+            {Array.isArray(products) &&
+              products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  image={product.image}
+                  title={product.title}
+                  price={product.price}
+                />
+              ))}
           </section>
         </div>
       </main>
@@ -91,27 +92,30 @@ export default function Home({ products, categories }) {
   );
 }
 
+// ✅ FIXED getStaticProps
 export async function getStaticProps() {
   try {
-    // Use the internal Vercel API proxy
-    const productRes = await fetch(
-      "https://appscrip-task-kamaleshwaran.vercel.app/api/products"
-    );
-    const categoryRes = await fetch(
-      "https://appscrip-task-kamaleshwaran.vercel.app/api/categories"
-    );
+    // Direct Fakestore API calls (REQUIRED for Vercel)
+    const productRes = await fetch("https://fakestoreapi.com/products");
+    const categoryRes = await fetch("https://fakestoreapi.com/products/categories");
 
     const products = await productRes.json();
     const categories = await categoryRes.json();
 
     return {
-      props: { products, categories },
-      revalidate: 60, // ISR refresh every 60 seconds
+      props: {
+        products: Array.isArray(products) ? products : [],
+        categories: Array.isArray(categories) ? categories : [],
+      },
+      revalidate: 60,
     };
-  } catch (err) {
-    console.error("ERROR IN getStaticProps:", err);
+  } catch (error) {
+    console.error("ERROR IN getStaticProps:", error);
     return {
-      props: { products: [], categories: [] },
+      props: {
+        products: [],
+        categories: [],
+      },
       revalidate: 60,
     };
   }
