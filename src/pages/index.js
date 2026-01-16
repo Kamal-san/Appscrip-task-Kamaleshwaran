@@ -23,34 +23,14 @@ export default function Home({ products, categories }) {
           content="Explore premium clothing, accessories, and handcrafted fashion items."
         />
 
-        <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
-        <meta property="og:description" content="Shop exclusive fashion catalog" />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.vercel.app/" />
-
         <link rel="canonical" href="https://appscrip-task-kamaleshwaran.vercel.app/" />
 
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "CollectionPage",
-              name: "Product Listing – Appscrip Store",
-              description: "Browse thousands of premium fashion products.",
-              url: "https://appscrip-task-kamaleshwaran.vercel.app/",
-              mainEntity: products?.map((p) => ({
-                "@type": "Product",
-                name: p.title,
-                image: p.image,
-                offers: {
-                  "@type": "Offer",
-                  price: p.price,
-                  priceCurrency: "INR",
-                },
-              })),
-            }),
-          }}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Premium Fashion Products – Appscrip Store" />
+        <meta property="og:url" content="https://appscrip-task-kamaleshwaran.vercel.app/" />
+        <meta
+          property="og:description"
+          content="Discover premium curated fashion items."
         />
       </Head>
 
@@ -58,7 +38,7 @@ export default function Home({ products, categories }) {
       <Discover />
 
       <ProductsNavBar
-        totalItems={products?.length || 0}
+        totalItems={products.length}
         showFilters={showFilters}
         setShowFilters={setShowFilters}
       />
@@ -69,20 +49,17 @@ export default function Home({ products, categories }) {
 
           <section
             className={
-              showFilters
-                ? styles.products
-                : `${styles.products} ${styles.full}`
+              showFilters ? styles.products : `${styles.products} ${styles.full}`
             }
           >
-            {Array.isArray(products) &&
-              products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  image={product.image}
-                  title={product.title}
-                  price={product.price}
-                />
-              ))}
+            {products.map((product) => (
+              <ProductCard
+                key={product.id}
+                image={product.image}
+                title={product.title}
+                price={product.price}
+              />
+            ))}
           </section>
         </div>
       </main>
@@ -92,23 +69,22 @@ export default function Home({ products, categories }) {
   );
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   try {
-    const productRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products`);
-    const categoryRes = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`);
+    const productsRes = await fetch("https://fakestoreapi.com/products");
+    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
 
-    const products = await productRes.json();
-    const categories = await categoryRes.json();
+    const products = await productsRes.json();
+    const categories = await categoriesRes.json();
 
     return {
       props: { products, categories },
-      revalidate: 60,
     };
   } catch (err) {
-    console.error("ERROR IN getStaticProps:", err);
+    console.error("SSR FETCH ERROR:", err);
+
     return {
       props: { products: [], categories: [] },
-      revalidate: 60,
     };
   }
 }
