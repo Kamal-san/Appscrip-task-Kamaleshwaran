@@ -101,8 +101,8 @@ export default function Home({ products, categories }) {
 }
 export async function getServerSideProps() {
   try {
-    const productsRes = await fetch("https://fakestoreapi.com/products");
-    const categoriesRes = await fetch("https://fakestoreapi.com/products/categories");
+    const productsRes = await fetch("https://appscrip-task-kamaleshwaran.vercel.app/api/products");
+    const categoriesRes = await fetch("https://appscrip-task-kamaleshwaran.vercel.app/api/categories");
 
     const products = await productsRes.json();
     const categories = await categoriesRes.json();
@@ -112,7 +112,6 @@ export async function getServerSideProps() {
     };
   } catch (err) {
     console.error("SERVER FETCH ERROR:", err);
-
     return {
       props: { products: [], categories: [] },
     };
